@@ -8,31 +8,34 @@
     <link rel="icon" href="images/ToDo-List-App.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <audio id="confeti" src="sounds/confetti-pop-sound-effect.mp3"></audio>
+    <audio id="completed" src="sounds/confetti-pop-sound-effect.mp3"></audio>
+    <audio id="uncompleted" src="sounds/trash-sound.mp3"></audio>
 </head>
 
 <body>
 
-    <div class="container">
-        <div class="input-section">
+    <div class="container animate-pop">
+        <div class="input-section animate-fade delay-1">
             <h1>Todo List</h1>
         </div>
 
-        <div class="input-section">
+        <div class="input-section animate-fade delay-1">
             <input type="text" id="todoInput" placeholder="Add a todo...">
             <input type="date" id="dateInput" title="Filter tasks">
-            <button id="addBtn">+</button>
+            <button onclick="confeti()" id="addBtn">+</button>
         </div>
 
-        <div class="action-buttons">
+        <div class="action-buttons animate-fade delay-2">
             <select id="filterSelect" title="Filter tasks">
                 <option id="FILTER" value="all">FILTER</option>
-                <option id="Completed" value="completed">Completed</option>
-                <option id="Uncompleted" value="uncompleted">Uncompleted</option>
+                <option onclick="confeti()" id="Completed" value="completed">Completed</option>
+                <option value="uncompleted">Uncompleted</option>
             </select>
             <button id="deleteAllBtn">DELETE ALL</button>
         </div>
 
-        <table>
+        <table class="animate-fade delay-3">
             <thead>
                 <tr>
                     <th>TASK</th>
@@ -48,6 +51,7 @@
         <p id="noTaskMsg" class="empty-msg">No task found</p>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <script src="js/script.js"></script>
 </body>
 

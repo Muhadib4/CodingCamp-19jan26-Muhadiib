@@ -1,4 +1,3 @@
-// Mengambil elemen-elemen HTML yang dibutuhkan
 const todoInput = document.getElementById('todoInput');
 const dateInput = document.getElementById('dateInput');
 const addBtn = document.getElementById('addBtn');
@@ -6,10 +5,24 @@ const todoTableBody = document.getElementById('todoTableBody');
 const noTaskMsg = document.getElementById('noTaskMsg');
 const filterSelect = document.getElementById('filterSelect');
 const deleteAllBtn = document.getElementById('deleteAllBtn');
+const sounds = {
+    click: new Audio('sounds/switch-sound.mp3'),
+    confetti: new Audio('sounds/confetti-pop-sound-effect.mp3'),
+    trash: new Audio('sounds/trash-sound.mp3')
+};
 
 let todos = [];
 
+function confeti() {
+    var audio = document.getElementById("confeti")
+    audio.currentTime = 0;
+    audio.play()
+}
+
 function addTodo() {
+    sounds.click.currentTime = 0; 
+    sounds.click.play().catch(e => console.log("Klik layar dulu agar suara aktif!"));
+
     const task = todoInput.value;
     const date = dateInput.value;
 
@@ -19,45 +32,43 @@ function addTodo() {
     }
 
     const newTodo = {
-        id: Date.now(), 
+        id: Date.now(),
         task: task,
         date: date,
         completed: false
     };
 
     todos.push(newTodo);
-    renderTodos(); // Perbarui tampilan
-    todoInput.value = ''; // Kosongkan input setelah tambah
+    renderTodos();
+    
+    fireConfetti(); 
+
+    todoInput.value = '';
     dateInput.value = '';
 }
 
-// Fungsi untuk menampilkan data dari array ke dalam tabel HTML
 function renderTodos(filter = 'all') {
-    todoTableBody.innerHTML = ''; // Kosongkan tabel dulu
+    todoTableBody.innerHTML = '';
 
-    // Saring data berdasarkan pilihan filter
     const filteredTodos = todos.filter(todo => {
         if (filter === 'completed') return todo.completed;
         if (filter === 'uncompleted') return !todo.completed;
-        return true; // Untuk 'all'
+        return true;
     });
 
-    // Cek jika data kosong, tampilkan pesan "No task found"
     if (filteredTodos.length === 0) {
         noTaskMsg.style.display = 'block';
     } else {
         noTaskMsg.style.display = 'none';
     }
 
-    // Loop data yang sudah disaring untuk dibuatkan baris tabel (TR)
     filteredTodos.forEach(todo => {
         const tr = document.createElement('tr');
         
-        // Cari baris ini di dalam loop filteredTodos.forEach:
         tr.innerHTML = `
         <td class="${todo.completed ? 'completed-text' : ''}">${todo.task}</td>
         <td>${todo.date}</td>
-    
+
         <td class="${todo.completed ? 'status-completed' : 'status-uncompleted'}">
         ${todo.completed ? 'Completed' : 'Uncompleted'}
         </td>
@@ -71,8 +82,8 @@ function renderTodos(filter = 'all') {
     });
 }
 
-// Fungsi untuk mengubah status selesai/belum
 function toggleComplete(id) {
+    
     todos = todos.map(todo => {
         if (todo.id === id) {
             return { ...todo, completed: !todo.completed };
@@ -80,10 +91,10 @@ function toggleComplete(id) {
         return todo;
     });
     renderTodos(filterSelect.value);
+    var audio = document.getElementById("completed")
+    audio.play()
 }
 
-
-// Fungsi untuk menghapus satu tugas dengan konfirmasi
 function deleteTodo(id) {
     const yakin = confirm("Apakah kamu yakin ingin meng-delete task ini?");
 
@@ -91,23 +102,72 @@ function deleteTodo(id) {
         todos = todos.filter(todo => todo.id !== id);
         renderTodos(filterSelect.value);
     } 
+    var audio = document.getElementById("uncompleted")
+    audio.play()
 }
 
-// Fungsi untuk menghapus semua tugas
 deleteAllBtn.addEventListener('click', () => {
     if (confirm("Hapus semua tugas?")) {
         todos = [];
         renderTodos();
     }
+    var audio = document.getElementById("uncompleted")
+    audio.play()
 });
 
-// Event listener untuk tombol tambah
 addBtn.addEventListener('click', addTodo);
 
-// Event listener untuk filter (Poin instruksi: Filter)
 filterSelect.addEventListener('change', (e) => {
     renderTodos(e.target.value);
 });
 
-// Jalankan render pertama kali saat web dibuka
 renderTodos();
+
+function fireConfetti(isSuccess = true) {
+    if(isSuccess) {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#a864fd', '#29cdff', '#78ff44', '#ff718d', '#fdff6a']
+        });
+    }
+}
+
+function addTodo() {
+    const task = todoInput.value;
+    const date = dateInput.value;
+
+    if (task === '' || date === '') {
+        alert("Harap isi tugas dan tanggalnya!");
+        return;
+    }
+
+    const newTodo = {
+        id: Date.now(),
+        task: task,
+        date: date,
+        completed: false
+    };
+
+    todos.push(newTodo);
+    renderTodos();
+    
+    fireConfetti(); 
+
+    todoInput.value = '';
+    dateInput.value = '';
+}
+
+function toggleComplete(id) {
+    todos = todos.map(todo => {
+        if (todo.id === id) {
+            if (!todo.completed) {
+                fireConfetti(); 
+            }
+            return { ...todo, completed: !todo.completed };
+        }
+        return todo;
+    });
+    renderTodos(filterSelect.value);
+}
